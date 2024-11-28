@@ -22,13 +22,13 @@
 Add the library to your `Cargo.toml`:
 ```toml
 [dependencies]
-scrfd = { version = "0.1.0", features = ["async"] } # Enable async feature if needed
+rusty_scrfd = { version = "1.0.0", features = ["async"] } # Enable async feature if needed
 ```
 
 To enable synchronous mode only, omit the `async` feature:
 ```toml
 [dependencies]
-scrfd = "1.0.0"
+rusty_scrfd = "1.0.0"
 ```
 
 ---
@@ -37,7 +37,7 @@ scrfd = "1.0.0"
 
 ### Synchronous Example
 ```rust
-use scrfd::SCRFD;
+use rusty_scrfd::SCRFD;
 use image::open;
 use ort::session::SessionBuilder;
 use std::collections::HashMap;
@@ -74,11 +74,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 Enable the `async` feature in `Cargo.toml`:
 ```toml
 [dependencies]
-scrfd = { version = "1.0.0", features = ["async"] }
+rusty_scrfd = { version = "1.0.0", features = ["async"] }
 ```
 
 ```rust
-use scrfd::SCRFDAsync;
+use rusty_scrfd::SCRFDAsync;
 use image::open;
 use ort::session::SessionBuilder;
 use std::collections::HashMap;
