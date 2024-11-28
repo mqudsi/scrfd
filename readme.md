@@ -28,7 +28,7 @@ scrfd = { version = "0.1.0", features = ["async"] } # Enable async feature if ne
 To enable synchronous mode only, omit the `async` feature:
 ```toml
 [dependencies]
-scrfd = "0.1.0"
+scrfd = "1.0.0"
 ```
 
 ---
@@ -74,7 +74,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 Enable the `async` feature in `Cargo.toml`:
 ```toml
 [dependencies]
-scrfd = { version = "0.1.0", features = ["async"] }
+scrfd = { version = "1.0.0", features = ["async"] }
 ```
 
 ```rust
