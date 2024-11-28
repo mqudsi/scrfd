@@ -1,0 +1,24 @@
+[package]
+name = "scrfd"
+version = "1.0.0"
+authors = ["Prabhat Ranjan <prabhat0206@hotmail.com>"]
+edition = "2021"
+description = "A Rust library for face detection using the SCRFD model."
+keywords = ["SCRFD", "face-detection", "machine-learning", "onnx"]
+categories = ["machine-learning", "computer-vision"]
+license = "MIT"
+repository = "https://github.com/prabhat0205/scrfd"
+
+[features]
+default = []
+async = ["tokio"]
+
+[dependencies]
+image = "0.24"
+ort = { version = "2.0.0-rc.8", features = [ "download-binaries", "ndarray" ] }
+opencv = "0.93.4"
+ndarray = "0.16.1"
+uuid = "1.11.0"
+anyhow = "1.0.93"
+ndarray-stats = "0.4"
+tokio = { version = "1.0", optional = true }
