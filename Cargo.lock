@@ -1055,7 +1055,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "scrfd"
+name = "rusty_scrfd"
 version = "1.0.0"
 dependencies = [
  "anyhow",

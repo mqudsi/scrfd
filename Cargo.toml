@@ -1,5 +1,5 @@
 [package]
-name = "scrfd"
+name = "rusty_scrfd"
 version = "1.0.0"
 authors = ["Prabhat Ranjan <prabhat0206@hotmail.com>"]
 edition = "2021"
