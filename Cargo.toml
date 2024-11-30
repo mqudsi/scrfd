@@ -1,6 +1,6 @@
 [package]
 name = "rusty_scrfd"
-version = "1.0.0"
+version = "1.0.1"
 authors = ["Prabhat Ranjan <prabhat0206@hotmail.com>"]
 edition = "2021"
 description = "A Rust library for face detection using the SCRFD model."
