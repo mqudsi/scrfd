@@ -7,7 +7,7 @@ description = "A Rust library for face detection using the SCRFD model."
 keywords = ["SCRFD", "face-detection", "machine-learning", "onnx"]
 categories = ["computer-vision"]
 license = "MIT"
-repository = "https://github.com/prabhat0205/scrfd"
+repository = "https://github.com/prabhat0206/scrfd"
 
 [features]
 default = []
