@@ -22,4 +22,4 @@ uuid = "1.11.0"
 anyhow = "1.0.93"
 ndarray-stats = "0.4"
 tokio = { version = "1.0", optional = true }
-log = "*"
+log = "0.4"
