@@ -22,13 +22,13 @@
 Add the library to your `Cargo.toml`:
 ```toml
 [dependencies]
-rusty_scrfd = { version = "1.0.0", features = ["async"] } # Enable async feature if needed
+rusty_scrfd = { version = "1.1.0", features = ["async"] } # Enable async feature if needed
 ```
 
 To enable synchronous mode only, omit the `async` feature:
 ```toml
 [dependencies]
-rusty_scrfd = "1.0.0"
+rusty_scrfd = "1.1.0"
 ```
 
 ---
@@ -74,7 +74,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 Enable the `async` feature in `Cargo.toml`:
 ```toml
 [dependencies]
-rusty_scrfd = { version = "1.0.0", features = ["async"] }
+rusty_scrfd = { version = "1.1.0", features = ["async"] }
 ```
 
 ```rust
