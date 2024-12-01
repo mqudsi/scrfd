@@ -1056,10 +1056,11 @@ dependencies = [
 
 [[package]]
 name = "rusty_scrfd"
-version = "1.0.1"
+version = "1.1.0"
 dependencies = [
  "anyhow",
  "image",
+ "log",
  "ndarray 0.16.1",
  "ndarray-stats",
  "opencv",
