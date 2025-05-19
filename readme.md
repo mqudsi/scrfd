@@ -4,6 +4,23 @@
 
 ---
 
+## Breaking Changes in v1.2.0
+
+- The `detect` function now accepts `opencv::core::Mat` instead of `image::RgbImage`
+  - This change significantly improves performance by:
+    - Eliminating unnecessary image conversions
+    - Using OpenCV's optimized memory management
+    - Leveraging hardware-accelerated image processing operations
+    - Reducing memory allocations and copies
+    - Providing direct compatibility with OpenCV's extensive computer vision ecosystem
+- Added builder pattern for easier model configuration
+- Added support for relative output coordinates
+- Updated default parameters:
+  - Confidence threshold changed from 0.5 to 0.25
+  - IoU threshold changed from 0.5 to 0.4
+
+---
+
 ## Features
 - **Face Detection**: Detect bounding boxes and landmarks for faces in images.
 - **Asynchronous Support**: Optional async functionality for non-blocking operations.
@@ -43,6 +60,8 @@ rusty_scrfd = "1.2.0"
 use rusty_scrfd::builder::SCRFDBuilder;
 use ort::session::SessionBuilder;
 use std::collections::HashMap;
+use opencv::imgcodecs::imread;
+use opencv::imgcodecs::IMREAD_COLOR;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Load the ONNX model
@@ -57,8 +76,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .set_relative_output(true)
         .build()?;
 
-    // Load an image
-    let image = open("path/to/image.jpg")?.into_rgb8();
+    // Load an image using OpenCV
+    let image = imread("path/to/image.jpg", IMREAD_COLOR)?;
 
     // Center cache to optimize anchor generation
     let mut center_cache = HashMap::new();
@@ -81,6 +100,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 use rusty_scrfd::SCRFD;
 use ort::session::SessionBuilder;
 use std::collections::HashMap;
+use opencv::imgcodecs::imread;
+use opencv::imgcodecs::IMREAD_COLOR;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Load the ONNX model
@@ -96,8 +117,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         true         // relative output
     )?;
 
-    // Load an image
-    let image = open("path/to/image.jpg")?.into_rgb8();
+    // Load an image using OpenCV
+    let image = imread("path/to/image.jpg", IMREAD_COLOR)?;
 
     // Center cache to optimize anchor generation
     let mut center_cache = HashMap::new();
@@ -127,6 +148,8 @@ rusty_scrfd = { version = "1.2.0", features = ["async"] }
 use rusty_scrfd::builder::SCRFDBuilder;
 use ort::session::SessionBuilder;
 use std::collections::HashMap;
+use opencv::imgcodecs::imread;
+use opencv::imgcodecs::IMREAD_COLOR;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -142,8 +165,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .set_relative_output(true)
         .build_async()?;
 
-    // Load an image
-    let image = open("path/to/image.jpg")?.into_rgb8();
+    // Load an image using OpenCV
+    let image = imread("path/to/image.jpg", IMREAD_COLOR)?;
 
     // Center cache to optimize anchor generation
     let mut center_cache = HashMap::new();
@@ -191,6 +214,19 @@ let model = SCRFDBuilder::new(session)
 - Confidence threshold: 0.25
 - IoU threshold: 0.4
 - Relative output: true
+
+### Detect Function
+The `detect` function now accepts OpenCV's `Mat` type instead of `image::RgbImage`:
+
+```rust
+pub fn detect(
+    &mut self,
+    image: &Mat,                    // OpenCV Mat instead of RgbImage
+    max_num: usize,
+    metric: &str,
+    center_cache: &mut HashMap<(i32, i32, i32), Array2<f32>>,
+) -> Result<(Array2<f32>, Option<Array3<f32>>), Box<dyn Error>>
+```
 
 ### Helper Functions
 **Available in `ScrfdHelpers`**:
