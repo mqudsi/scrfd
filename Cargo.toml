@@ -22,7 +22,7 @@ default = []
 async = ["tokio"]
 
 [dependencies]
-ort = { version = "2.0.0-rc.9", features = [ "ndarray" ] }
+ort = { version = "2.0.0-rc.10", features = [ "ndarray" ] }
 opencv = "0.93.4"
 ndarray = "0.16.1"
 uuid = "1.11.0"
