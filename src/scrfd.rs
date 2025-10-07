@@ -190,7 +190,6 @@ impl SCRFD {
         let bboxes = ScrfdHelpers::concatenate_array2(&bboxes_list)?;
         let bboxes = &bboxes / det_scale;
 
-
         let mut kpss = if self.use_kps {
             let kpss = ScrfdHelpers::concatenate_array3(&kpss_list)?;
             Some(&kpss / det_scale)

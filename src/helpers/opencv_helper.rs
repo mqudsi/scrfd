@@ -1,47 +1,47 @@
 //! OpenCV Helper Module
-//! 
+//!
 //! This module provides a set of helper functions for common OpenCV operations used in face detection.
 //! It encapsulates image preprocessing, resizing, and tensor conversion operations in a reusable way.
-//! 
+//!
 //! # Examples
-//! 
+//!
 //! ```rust
 //! use rusty_scrfd::helpers::opencv_helper::OpenCVHelper;
 //! use opencv::core::Mat;
 //! use opencv::imgcodecs;
-//! 
+//!
 //! // Create a new helper instance
 //! let helper = OpenCVHelper::new(127.5, 128.0);
-//! 
+//!
 //! // Load an image
 //! let image = imgcodecs::imread("test_data/test_image.jpg", imgcodecs::IMREAD_COLOR)?;
-//! 
+//!
 //! // Use the helper for image processing
 //! let (resized_image, scale) = helper.resize_with_aspect_ratio(&image, (640, 640))?;
 //! let input_tensor = helper.prepare_input_tensor(&resized_image, (640, 640))?;
 //! # Ok::<(), Box<dyn std::error::Error>>(())
 //! ```
 
-use opencv::{core, dnn, prelude::*};
 use ndarray::Array4;
+use opencv::{core, dnn, prelude::*};
 use std::error::Error;
 
 /// A helper struct for common OpenCV operations
-/// 
+///
 /// This struct provides methods for image preprocessing and tensor conversion
 /// commonly used in face detection tasks. It maintains normalization parameters
 /// (mean and standard deviation) used for image preprocessing.
-/// 
+///
 /// # Fields
-/// 
+///
 /// * `mean` - The mean value used for image normalization (default: 127.5)
 /// * `std` - The standard deviation used for image normalization (default: 128.0)
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```rust
 /// use rusty_scrfd::helpers::opencv_helper::OpenCVHelper;
-/// 
+///
 /// let helper = OpenCVHelper::new(127.5, 128.0);
 /// ```
 pub struct OpenCVHelper {
@@ -51,21 +51,21 @@ pub struct OpenCVHelper {
 
 impl OpenCVHelper {
     /// Creates a new instance of OpenCVHelper
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `mean` - The mean value for image normalization
     /// * `std` - The standard deviation for image normalization
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// A new instance of OpenCVHelper
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```rust
     /// use rusty_scrfd::helpers::opencv_helper::OpenCVHelper;
-    /// 
+    ///
     /// let helper = OpenCVHelper::new(127.5, 128.0);
     /// ```
     pub fn new(mean: f32, std: f32) -> Self {
@@ -73,36 +73,40 @@ impl OpenCVHelper {
     }
 
     /// Prepares an input tensor from an OpenCV Mat for model inference
-    /// 
+    ///
     /// This method performs the following operations:
     /// 1. Normalizes the image using mean and standard deviation
     /// 2. Resizes the image to the target dimensions
     /// 3. Converts the OpenCV Mat to a format suitable for model input
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `image` - The input image as an OpenCV Mat
     /// * `input_size` - A tuple of (width, height) specifying the target dimensions
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// A Result containing either:
     /// * `Ok(Array4<f32>)` - The prepared input tensor
     /// * `Err(Box<dyn Error>)` - An error if the operation fails
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```rust
     /// use rusty_scrfd::helpers::opencv_helper::OpenCVHelper;
     /// use opencv::core::Mat;
     /// use opencv::imgcodecs;
-    /// 
+    ///
     /// let helper = OpenCVHelper::new(127.5, 128.0);
     /// let image = imgcodecs::imread("test_data/test_image.jpg", imgcodecs::IMREAD_COLOR)?;
     /// let input_tensor = helper.prepare_input_tensor(&image, (640, 640))?;
     /// # Ok::<(), Box<dyn std::error::Error>>(())
     /// ```
-    pub fn prepare_input_tensor(&self, image: &Mat, input_size: (i32, i32)) -> Result<Array4<f32>, Box<dyn Error>> {
+    pub fn prepare_input_tensor(
+        &self,
+        image: &Mat,
+        input_size: (i32, i32),
+    ) -> Result<Array4<f32>, Box<dyn Error>> {
         // Preprocess the image using blobFromImage
         let blob = dnn::blob_from_image(
             &image,
@@ -123,41 +127,45 @@ impl OpenCVHelper {
     }
 
     /// Resizes an image while preserving its aspect ratio
-    /// 
+    ///
     /// This method performs the following operations:
     /// 1. Calculates new dimensions that preserve the aspect ratio
     /// 2. Resizes the image to fit within the target dimensions
     /// 3. Pads the image if necessary to match the target dimensions
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `image` - The input image as an OpenCV Mat
     /// * `target_size` - A tuple of (width, height) specifying the target dimensions
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// A Result containing either:
     /// * `Ok((Mat, f32))` - A tuple containing:
     ///   - The resized and padded image
     ///   - The scale factor used for resizing
     /// * `Err(Box<dyn Error>)` - An error if the operation fails
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```rust
     /// use rusty_scrfd::helpers::opencv_helper::OpenCVHelper;
     /// use opencv::core::Mat;
     /// use opencv::imgcodecs;
-    /// 
+    ///
     /// let helper = OpenCVHelper::new(127.5, 128.0);
     /// let image = imgcodecs::imread("sample_input/test_image.jpg", imgcodecs::IMREAD_COLOR)?;
     /// let (resized_image, scale) = helper.resize_with_aspect_ratio(&image, (640, 640))?;
     /// # Ok::<(), Box<dyn std::error::Error>>(())
     /// ```
-    pub fn resize_with_aspect_ratio(&self, image: &Mat, target_size: (i32, i32)) -> Result<(Mat, f32), Box<dyn Error>> {
+    pub fn resize_with_aspect_ratio(
+        &self,
+        image: &Mat,
+        target_size: (i32, i32),
+    ) -> Result<(Mat, f32), Box<dyn Error>> {
         let orig_width = image.cols() as f32;
         let orig_height = image.rows() as f32;
-        
+
         let (input_width, input_height) = target_size;
         let im_ratio = orig_height / orig_width;
         let model_ratio = input_height as f32 / input_width as f32;
@@ -193,19 +201,21 @@ impl OpenCVHelper {
             core::CV_8UC3,
             core::Scalar::all(0.0),
         )?;
-        let mut roi = det_image.roi_mut(core::Rect::new(
-            0,
-            0,
-            input_height,
-            new_height,
-        ))?;
+        let mut roi = det_image.roi_mut(core::Rect::new(0, 0, input_height, new_height))?;
         opencv_resized_image.copy_to(&mut roi)?;
 
         Ok((det_image, det_scale))
     }
 
     pub fn draw_rectangle(&self, image: &mut Mat, rect: core::Rect) -> Result<(), Box<dyn Error>> {
-        opencv::imgproc::rectangle(image, rect, core::Scalar::new(0.0, 0.0, 255.0, 0.0), 2, opencv::imgproc::LINE_8, 0)?;
+        opencv::imgproc::rectangle(
+            image,
+            rect,
+            core::Scalar::new(0.0, 0.0, 255.0, 0.0),
+            2,
+            opencv::imgproc::LINE_8,
+            0,
+        )?;
         Ok(())
     }
 }
@@ -238,7 +248,7 @@ mod tests {
         // Check dimensions
         assert_eq!(resized.rows(), 200);
         assert_eq!(resized.cols(), 200);
-        
+
         // For landscape image (100x50):
         // im_ratio = 50/100 = 0.5
         // model_ratio = 200/200 = 1.0
@@ -267,7 +277,7 @@ mod tests {
         // Check dimensions
         assert_eq!(resized.rows(), 200);
         assert_eq!(resized.cols(), 200);
-        
+
         // For portrait image (50x100):
         // im_ratio = 100/50 = 2.0
         // model_ratio = 200/200 = 1.0

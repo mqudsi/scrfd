@@ -16,12 +16,12 @@ mod tests {
     use super::*;
     use opencv::core::Vector;
     use opencv::imgcodecs::{imdecode, IMREAD_UNCHANGED};
+    use opencv::prelude::MatTraitConst;
     use opencv::{core, imgcodecs, imgproc};
     use ort::execution_providers::cpu::CPUExecutionProvider;
     use ort::session::Session;
     use std::collections::HashMap;
     use std::path::Path;
-    use opencv::prelude::MatTraitConst;
 
     #[test]
     fn test_sync_face_detection() -> Result<(), Box<dyn std::error::Error>> {

@@ -1,24 +1,27 @@
 use ndarray::{s, Array2, Array3, ArrayD, ArrayViewD, Axis};
-use ort::{session::Session, value::Value};
-use std::{collections::HashMap, error::Error};
 use opencv::core::Mat;
 use opencv::prelude::MatTraitConst;
+use ort::{session::Session, value::Value};
+use std::{collections::HashMap, error::Error};
 
-use super::helpers::{relative_conversion::RelativeConversion, scrfd_helper::ScrfdHelpers, opencv_helper::OpenCVHelper};
+use super::helpers::{
+    opencv_helper::OpenCVHelper, relative_conversion::RelativeConversion,
+    scrfd_helper::ScrfdHelpers,
+};
 
 /// A face detection model using SCRFD (Selective Convolutional Response Face Detector) architecture.
-/// 
+///
 /// This struct provides asynchronous face detection capabilities with configurable parameters
 /// for input size, confidence threshold, and IoU threshold.
-/// 
+///
 /// # Example
 /// ```rust
 /// use ort::Session;
-/// 
+///
 /// let session = Session::builder()
 ///     .with_model_from_file("path/to/model.onnx")
 ///     .build()?;
-/// 
+///
 /// let detector = SCRFDAsync::new(
 ///     session,
 ///     (640, 640),  // input size
@@ -45,17 +48,17 @@ pub struct SCRFDAsync {
 
 impl SCRFDAsync {
     /// Creates a new SCRFD face detector instance.
-    /// 
+    ///
     /// # Arguments
     /// * `session` - An ONNX Runtime session containing the loaded SCRFD model
     /// * `input_size` - Tuple of (width, height) for the input image dimensions
     /// * `conf_thres` - Confidence threshold for face detection (0.0 to 1.0)
     /// * `iou_thres` - IoU threshold for non-maximum suppression (0.0 to 1.0)
     /// * `relative_output` - Whether to return coordinates relative to image dimensions
-    /// 
+    ///
     /// # Returns
     /// * `Result<Self, Box<dyn Error>>` - A new SCRFDAsync instance or an error
-    /// 
+    ///
     /// # Example
     /// ```rust
     /// let detector = SCRFDAsync::new(
@@ -106,17 +109,17 @@ impl SCRFDAsync {
     }
 
     /// Performs the forward pass of the SCRFD model.
-    /// 
+    ///
     /// # Arguments
     /// * `input_tensor` - Input tensor of shape [1, 3, height, width]
     /// * `center_cache` - Mutable reference to the center cache for anchor points
-    /// 
+    ///
     /// # Returns
     /// * `Result<(Vec<Array2<f32>>, Vec<Array2<f32>>, Vec<Array3<f32>>), Box<dyn Error>>` - Tuple containing:
     ///   - Vector of score arrays
     ///   - Vector of bounding box arrays
     ///   - Vector of keypoint arrays (if enabled)
-    /// 
+    ///
     /// # Example
     /// ```rust
     /// let (scores, bboxes, kpss) = detector.forward(&input_tensor, &mut center_cache).await?;
@@ -222,18 +225,18 @@ impl SCRFDAsync {
     }
 
     /// Detects faces in an input image.
-    /// 
+    ///
     /// # Arguments
     /// * `image` - Input image as OpenCV Mat
     /// * `max_num` - Maximum number of faces to detect (0 for unlimited)
     /// * `metric` - Metric for selecting faces when max_num is exceeded ("max" for largest area)
     /// * `center_cache` - Mutable reference to the center cache for anchor points
-    /// 
+    ///
     /// # Returns
     /// * `Result<(Array2<f32>, Option<Array3<f32>>), Box<dyn Error>>` - Tuple containing:
     ///   - Array of bounding boxes [x1, y1, x2, y2, score]
     ///   - Optional array of keypoints [x1, y1, x2, y2, ..., x5, y5]
-    /// 
+    ///
     /// # Example
     /// ```rust
     /// let (bboxes, keypoints) = detector.detect(&image, 10, "max", &mut center_cache).await?;
@@ -248,8 +251,12 @@ impl SCRFDAsync {
         let orig_width = image.cols() as f32;
         let orig_height = image.rows() as f32;
 
-        let (det_image, det_scale) = self.opencv_helper.resize_with_aspect_ratio(image, self.input_size)?;
-        let input_tensor = self.opencv_helper.prepare_input_tensor(&det_image, self.input_size)?;
+        let (det_image, det_scale) = self
+            .opencv_helper
+            .resize_with_aspect_ratio(image, self.input_size)?;
+        let input_tensor = self
+            .opencv_helper
+            .prepare_input_tensor(&det_image, self.input_size)?;
         let (scores_list, bboxes_list, kpss_list) =
             match self.forward(&input_tensor.into_dyn(), center_cache).await {
                 Ok(result) => result,
@@ -293,7 +300,10 @@ impl SCRFDAsync {
         let det = if max_num > 0 && max_num < det.shape()[0] {
             let area = (&det.slice(s![.., 2]) - &det.slice(s![.., 0]))
                 * (&det.slice(s![.., 3]) - &det.slice(s![.., 1]));
-            let image_center = (self.input_size.0 as f32 / 2.0, self.input_size.1 as f32 / 2.0);
+            let image_center = (
+                self.input_size.0 as f32 / 2.0,
+                self.input_size.1 as f32 / 2.0,
+            );
             let offsets = ndarray::stack![
                 Axis(0),
                 (&det.slice(s![.., 0]) + &det.slice(s![.., 2])) / 2.0 - image_center.1 as f32,
