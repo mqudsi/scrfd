@@ -1,5 +1,5 @@
 //! Builder module for SCRFD face detection models.
-//! 
+//!
 //! This module provides a builder pattern implementation for constructing both synchronous
 //! and asynchronous SCRFD face detection models with configurable parameters.
 //!
@@ -7,10 +7,10 @@
 //! ```no_run
 //! use scrfd::builder::SCRFDBuilder;
 //! use ort::session::Session;
-//! 
+//!
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! let session = Session::builder()?.with_model_from_file("model.onnx")?;
-//! 
+//!
 //! // Build synchronous model with default parameters
 //! let model = SCRFDBuilder::new(session)
 //!     .build()?;
@@ -26,18 +26,18 @@
 //! # }
 //! ```
 
-use ort::session::Session;
 use crate::scrfd::SCRFD;
+use ort::session::Session;
 use std::error::Error;
 
 #[cfg(feature = "async")]
 use crate::scrfd_async::SCRFDAsync;
 
 /// Builder for configuring and constructing SCRFD face detection models
-/// 
+///
 /// This struct provides a fluent builder interface for creating both synchronous [`SCRFD`]
 /// and asynchronous [`SCRFDAsync`] model instances with customizable parameters.
-/// 
+///
 /// The builder allows setting:
 /// - Input image dimensions
 /// - Confidence threshold for detections
@@ -58,10 +58,10 @@ pub struct SCRFDBuilder {
 
 impl SCRFDBuilder {
     /// Creates a new SCRFD builder with default parameters
-    /// 
+    ///
     /// # Arguments
     /// * `session` - ONNX Runtime session for the model
-    /// 
+    ///
     /// # Returns
     /// A new builder instance with default parameters:
     /// - Input size: (640, 640)
@@ -78,10 +78,10 @@ impl SCRFDBuilder {
     }
 
     /// Sets the input image dimensions
-    /// 
+    ///
     /// # Arguments
     /// * `size` - Tuple of (width, height) for the input image
-    /// 
+    ///
     /// # Returns
     /// A mutable reference to self for method chaining
     pub fn set_input_size(mut self, size: (i32, i32)) -> Self {
@@ -90,10 +90,10 @@ impl SCRFDBuilder {
     }
 
     /// Sets the confidence threshold for face detection
-    /// 
+    ///
     /// # Arguments
     /// * `thres` - Confidence threshold (0.0 to 1.0)
-    /// 
+    ///
     /// # Returns
     /// A mutable reference to self for method chaining
     pub fn set_conf_thres(mut self, thres: f32) -> Self {
@@ -102,10 +102,10 @@ impl SCRFDBuilder {
     }
 
     /// Sets the IoU threshold for non-maximum suppression
-    /// 
+    ///
     /// # Arguments
     /// * `thres` - IoU threshold (0.0 to 1.0)
-    /// 
+    ///
     /// # Returns
     /// A mutable reference to self for method chaining
     pub fn set_iou_thres(mut self, thres: f32) -> Self {
@@ -114,10 +114,10 @@ impl SCRFDBuilder {
     }
 
     /// Sets the relative output flag
-    /// 
+    ///
     /// # Arguments
     /// * `relative` - Whether to use relative output
-    /// 
+    ///
     /// # Returns
     /// A mutable reference to self for method chaining
     pub fn set_relative_output(mut self, relative: bool) -> Self {
@@ -126,7 +126,7 @@ impl SCRFDBuilder {
     }
 
     /// Builds a synchronous SCRFD model with the configured parameters
-    /// 
+    ///
     /// # Returns
     /// A Result containing either:
     /// * `Ok(SCRFD)` - Successfully built model
@@ -146,7 +146,7 @@ impl SCRFDBuilder {
     }
 
     /// Builds an asynchronous SCRFD model with the configured parameters
-    /// 
+    ///
     /// # Returns
     /// A Result containing either:
     /// * `Ok(SCRFDAsync)` - Successfully built model

@@ -85,16 +85,13 @@ impl SCRFD {
         let input_width = input_tensor.shape()[3];
         let input_value = Value::from_array(input_tensor)?;
         let input_name = self.input_names[0].clone();
-        let input = match ort::inputs![input_name => input_value] {
-            Ok(i) => i,
-            Err(e) => return Err(Box::new(e)),
-        };
+        let input = ort::inputs![input_name => input_value];
         // Run the model
         let session_output = self.session.run(input)?;
 
         let mut outputs = vec![];
         for (_, output) in session_output.iter().enumerate() {
-            let f32_array: ArrayViewD<f32> = output.1.try_extract_tensor()?;
+            let f32_array: ArrayViewD<f32> = output.1.try_extract_array()?;
             outputs.push(f32_array.to_owned());
         }
         drop(session_output);
@@ -189,7 +186,6 @@ impl SCRFD {
         let scores = ScrfdHelpers::concatenate_array2(&scores_list)?;
         let bboxes = ScrfdHelpers::concatenate_array2(&bboxes_list)?;
         let bboxes = &bboxes / det_scale;
-
 
         let mut kpss = if self.use_kps {
             let kpss = ScrfdHelpers::concatenate_array3(&kpss_list)?;

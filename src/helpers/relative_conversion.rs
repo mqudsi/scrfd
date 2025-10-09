@@ -1,18 +1,18 @@
 //! Module for converting between absolute and relative coordinates in image processing.
-//! 
+//!
 //! This module provides utilities for converting bounding boxes and keypoints between
 //! absolute pixel coordinates and relative normalized coordinates (0-1 range).
-//! 
+//!
 //! # Examples
-//! 
+//!
 //! ```rust
 //! use ndarray::array;
 //! use rusty_scrfd::helpers::relative_conversion::RelativeConversion;
-//! 
+//!
 //! // Convert bounding boxes
 //! let bboxes = array![[100.0, 100.0, 200.0, 200.0]];
 //! let relative_boxes = RelativeConversion::absolute_to_relative_bboxes(&bboxes, 400, 400);
-//! 
+//!
 //! // Convert keypoints
 //! let keypoints = array![[[100.0, 100.0], [200.0, 200.0]]];
 //! let relative_keypoints = RelativeConversion::absolute_to_relative_keypoints(&keypoints, 400, 400);
@@ -175,24 +175,21 @@ mod tests {
         assert!((result[[0, 3]] - 0.25).abs() < 1e-6); // height
 
         // Test case 2: Multiple bounding boxes
-        let bboxes = array![
-            [0.0, 0.0, 100.0, 100.0],
-            [200.0, 200.0, 300.0, 300.0]
-        ];
+        let bboxes = array![[0.0, 0.0, 100.0, 100.0], [200.0, 200.0, 300.0, 300.0]];
         let result = RelativeConversion::absolute_to_relative_bboxes(&bboxes, 400, 400);
         assert_eq!(result.shape(), &[2, 4]);
-        
+
         // First bbox
-        assert!((result[[0, 0]] - 0.0).abs() < 1e-6);    // left
-        assert!((result[[0, 1]] - 0.0).abs() < 1e-6);    // top
-        assert!((result[[0, 2]] - 0.25).abs() < 1e-6);   // width
-        assert!((result[[0, 3]] - 0.25).abs() < 1e-6);   // height
+        assert!((result[[0, 0]] - 0.0).abs() < 1e-6); // left
+        assert!((result[[0, 1]] - 0.0).abs() < 1e-6); // top
+        assert!((result[[0, 2]] - 0.25).abs() < 1e-6); // width
+        assert!((result[[0, 3]] - 0.25).abs() < 1e-6); // height
 
         // Second bbox
-        assert!((result[[1, 0]] - 0.5).abs() < 1e-6);    // left
-        assert!((result[[1, 1]] - 0.5).abs() < 1e-6);    // top
-        assert!((result[[1, 2]] - 0.25).abs() < 1e-6);   // width
-        assert!((result[[1, 3]] - 0.25).abs() < 1e-6);   // height
+        assert!((result[[1, 0]] - 0.5).abs() < 1e-6); // left
+        assert!((result[[1, 1]] - 0.5).abs() < 1e-6); // top
+        assert!((result[[1, 2]] - 0.25).abs() < 1e-6); // width
+        assert!((result[[1, 3]] - 0.25).abs() < 1e-6); // height
     }
 
     #[test]
@@ -207,8 +204,8 @@ mod tests {
         assert!((result[[0, 0, 1]] - 0.25).abs() < 1e-6); // y
 
         // Check second keypoint
-        assert!((result[[0, 1, 0]] - 0.5).abs() < 1e-6);  // x
-        assert!((result[[0, 1, 1]] - 0.5).abs() < 1e-6);  // y
+        assert!((result[[0, 1, 0]] - 0.5).abs() < 1e-6); // x
+        assert!((result[[0, 1, 1]] - 0.5).abs() < 1e-6); // y
 
         // Check third keypoint
         assert!((result[[0, 2, 0]] - 0.75).abs() < 1e-6); // x
@@ -225,12 +222,12 @@ mod tests {
         // Check first detection
         assert!((result[[0, 0, 0]] - 0.25).abs() < 1e-6); // x
         assert!((result[[0, 0, 1]] - 0.25).abs() < 1e-6); // y
-        assert!((result[[0, 1, 0]] - 0.5).abs() < 1e-6);  // x
-        assert!((result[[0, 1, 1]] - 0.5).abs() < 1e-6);  // y
+        assert!((result[[0, 1, 0]] - 0.5).abs() < 1e-6); // x
+        assert!((result[[0, 1, 1]] - 0.5).abs() < 1e-6); // y
 
         // Check second detection
-        assert!((result[[1, 0, 0]] - 0.75).abs() < 1e-6);  // x
-        assert!((result[[1, 0, 1]] - 0.75).abs() < 1e-6);  // y
+        assert!((result[[1, 0, 0]] - 0.75).abs() < 1e-6); // x
+        assert!((result[[1, 0, 1]] - 0.75).abs() < 1e-6); // y
         assert!((result[[1, 1, 0]] - 0.875).abs() < 1e-6); // x
         assert!((result[[1, 1, 1]] - 0.875).abs() < 1e-6); // y
 
@@ -240,9 +237,9 @@ mod tests {
         assert_eq!(result.shape(), &[1, 2, 2]);
 
         // Check clamped values
-        assert!((result[[0, 0, 0]] - 0.0).abs() < 1e-6);   // x
-        assert!((result[[0, 0, 1]] - 0.0).abs() < 1e-6);   // y
-        assert!((result[[0, 1, 0]] - 1.0).abs() < 1e-6);   // x
-        assert!((result[[0, 1, 1]] - 1.0).abs() < 1e-6);   // y
+        assert!((result[[0, 0, 0]] - 0.0).abs() < 1e-6); // x
+        assert!((result[[0, 0, 1]] - 0.0).abs() < 1e-6); // y
+        assert!((result[[0, 1, 0]] - 1.0).abs() < 1e-6); // x
+        assert!((result[[0, 1, 1]] - 1.0).abs() < 1e-6); // y
     }
 }

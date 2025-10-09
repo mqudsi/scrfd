@@ -1,22 +1,22 @@
 //! Module for SCRFD (Single-stage Center Real-time Face Detector) helper functions.
-//! 
+//!
 //! This module provides utility functions for SCRFD face detection, including:
 //! - Bounding box and keypoint decoding
 //! - Non-Maximum Suppression (NMS)
 //! - Anchor center generation
 //! - Array concatenation utilities
-//! 
+//!
 //! # Examples
-//! 
+//!
 //! ```rust
 //! use ndarray::array;
 //! use rusty_scrfd::helpers::scrfd_helper::ScrfdHelpers;
-//! 
+//!
 //! // Decode bounding boxes
 //! let points = array![[100.0, 100.0]];
 //! let distance = array![[10.0, 10.0, 20.0, 20.0]];
 //! let bboxes = ScrfdHelpers::distance2bbox(&points, &distance, Some((400, 400)));
-//! 
+//!
 //! // Perform NMS
 //! let detections = array![[10.0, 10.0, 20.0, 20.0, 0.9]];
 //! let keep_indices = ScrfdHelpers::nms(&detections, 0.5);
