@@ -87,7 +87,10 @@ impl SCRFD {
         let input_name = self.input_names[0].clone();
         let input = ort::inputs![input_name => input_value];
         // Run the model
-        let session_output = self.session.run(input)?;
+        let session_output = match self.session.run(input) {
+            Ok(output) => output,
+            Err(e) => return Err(Box::new(e)),
+        };
 
         let mut outputs = vec![];
         for (_, output) in session_output.iter().enumerate() {

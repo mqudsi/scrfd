@@ -1,7 +1,7 @@
 use ndarray::{s, Array2, Array3, ArrayD, ArrayViewD, Axis};
 use opencv::core::Mat;
 use opencv::prelude::MatTraitConst;
-use ort::{session::Session, value::Value};
+use ort::{session::{RunOptions, Session}, value::Value};
 use std::{collections::HashMap, error::Error};
 
 use super::helpers::{
@@ -125,7 +125,7 @@ impl SCRFDAsync {
     /// let (scores, bboxes, kpss) = detector.forward(&input_tensor, &mut center_cache).await?;
     /// ```
     pub async fn forward(
-        &self,
+        &mut self,
         input_tensor: &ArrayD<f32>,
         center_cache: &mut HashMap<(i32, i32, i32), Array2<f32>>,
     ) -> Result<(Vec<Array2<f32>>, Vec<Array2<f32>>, Vec<Array3<f32>>), Box<dyn Error>> {
@@ -136,13 +136,15 @@ impl SCRFDAsync {
         let input_width = input_tensor.shape()[3];
         let input_value = Value::from_array(input_tensor.to_owned())?;
         let input_name = self.input_names[0].clone();
-        let input = match ort::inputs![input_name => input_value] {
-            Ok(i) => i,
+        let input = ort::inputs![input_name => input_value];
+
+        let run_options = match RunOptions::new() {
+            Ok(options) => options,
             Err(e) => return Err(Box::new(e)),
         };
 
         // Run the model
-        let session_output = match self.session.run_async(input) {
+        let session_output = match self.session.run_async(input, &run_options) {
             Ok(output) => output,
             Err(e) => return Err(Box::new(e)),
         };
@@ -154,7 +156,7 @@ impl SCRFDAsync {
 
         let mut outputs = vec![];
         for (_, output) in session_output.iter().enumerate() {
-            let f32_array: ArrayViewD<f32> = match output.1.try_extract_tensor() {
+            let f32_array: ArrayViewD<f32> = match output.1.try_extract_array() {
                 Ok(array) => array,
                 Err(e) => return Err(Box::new(e)),
             };
@@ -242,7 +244,7 @@ impl SCRFDAsync {
     /// let (bboxes, keypoints) = detector.detect(&image, 10, "max", &mut center_cache).await?;
     /// ```
     pub async fn detect(
-        &self,
+        &mut self,
         image: &Mat,
         max_num: usize,
         metric: &str,
