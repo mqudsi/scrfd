@@ -70,19 +70,19 @@ impl ScrfdHelpers {
         distance: &Array2<f32>,
         max_shape: Option<(usize, usize)>,
     ) -> Array2<f32> {
-        let x1 = &points.column(0) - &distance.column(0);
-        let y1 = &points.column(1) - &distance.column(1);
-        let x2 = &points.column(0) + &distance.column(2);
-        let y2 = &points.column(1) + &distance.column(3);
+        let mut x1 = &points.column(0) - &distance.column(0);
+        let mut y1 = &points.column(1) - &distance.column(1);
+        let mut x2 = &points.column(0) + &distance.column(2);
+        let mut y2 = &points.column(1) + &distance.column(3);
 
         // Optionally clamp the values if max_shape is provided
         let (x1, y1, x2, y2) = if let Some((height, width)) = max_shape {
             let width = width as f32;
             let height = height as f32;
-            let x1 = x1.mapv(|x| x.max(0.0).min(width));
-            let y1 = y1.mapv(|y| y.max(0.0).min(height));
-            let x2 = x2.mapv(|x| x.max(0.0).min(width));
-            let y2 = y2.mapv(|y| y.max(0.0).min(height));
+            x1.mapv_inplace(|x| x.max(0.0).min(width));
+            y1.mapv_inplace(|y| y.max(0.0).min(height));
+            x2.mapv_inplace(|x| x.max(0.0).min(width));
+            y2.mapv_inplace(|y| y.max(0.0).min(height));
             (x1, y1, x2, y2)
         } else {
             // Do not clamp if max_shape is None
@@ -138,13 +138,13 @@ impl ScrfdHelpers {
         let mut preds = Vec::with_capacity(2 * num_keypoints);
 
         for i in 0..num_keypoints {
-            let px = &points.column(0) + &distance.column(2 * i);
-            let py = &points.column(1) + &distance.column(2 * i + 1);
+            let mut px = &points.column(0) + &distance.column(2 * i);
+            let mut py = &points.column(1) + &distance.column(2 * i + 1);
             let (px, py) = if let Some((height, width)) = max_shape {
                 let width = width as f32;
                 let height = height as f32;
-                let px = px.mapv(|x| x.max(0.0).min(width));
-                let py = py.mapv(|y| y.max(0.0).min(height));
+                px.mapv_inplace(|x| x.max(0.0).min(width));
+                py.mapv_inplace(|y| y.max(0.0).min(height));
                 (px, py)
             } else {
                 (px, py)
@@ -216,21 +216,24 @@ impl ScrfdHelpers {
             let area_i = areas[i];
 
             // Select the rest of the array
-            let x1_order = x1.select(Axis(0), order_rest);
-            let y1_order = y1.select(Axis(0), order_rest);
-            let x2_order = x2.select(Axis(0), order_rest);
-            let y2_order = y2.select(Axis(0), order_rest);
+            let mut x1_order = x1.select(Axis(0), order_rest);
+            let mut y1_order = y1.select(Axis(0), order_rest);
+            let mut x2_order = x2.select(Axis(0), order_rest);
+            let mut y2_order = y2.select(Axis(0), order_rest);
             let areas_order = areas.select(Axis(0), order_rest);
 
             // Compute the coordinates of the intersection
-            let xx1 = x1_order.mapv(|x| x1_i.max(x));
-            let yy1 = y1_order.mapv(|y| y1_i.max(y));
-            let xx2 = x2_order.mapv(|x| x2_i.min(x));
-            let yy2 = y2_order.mapv(|y| y2_i.min(y));
+            x1_order.mapv_inplace(|x| x1_i.max(x));
+            y1_order.mapv_inplace(|y| y1_i.max(y));
+            x2_order.mapv_inplace(|x| x2_i.min(x));
+            y2_order.mapv_inplace(|y| y2_i.min(y));
+            let (xx1, yy1, xx2, yy2) = (x1_order, y1_order, x2_order, y2_order);
 
             // Compute the width and height of the intersection
-            let w = (&xx2 - &xx1 + 1.0).mapv(|x| x.max(0.0));
-            let h = (&yy2 - &yy1 + 1.0).mapv(|y| y.max(0.0));
+            let mut w = &xx2 - &xx1 + 1.0;
+            w.mapv_inplace(|x| x.max(0.0));
+            let mut h = &yy2 - &yy1 + 1.0;
+            h.mapv_inplace(|y| y.max(0.0));
             let inter = &w * &h;
             let ovr = &inter / (area_i + &areas_order - &inter);
 
@@ -295,7 +298,7 @@ impl ScrfdHelpers {
         }
 
         // Multiply by stride
-        let anchor_centers = anchor_centers.mapv(|x| x * stride);
+        anchor_centers.mapv_inplace(|x| x * stride);
 
         // Handle multiple anchors if needed
         let anchor_centers = if num_anchors > 1 {
